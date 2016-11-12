@@ -1,5 +1,6 @@
 package com.tmdb.android.io.model;
 
+import android.text.TextUtils;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.tmdb.android.data.TmdbItem;
@@ -40,6 +41,14 @@ public class Movie extends TmdbItem {
         this.movieId = movieId;
         this.title = title;
         this.voteAverage = voteAverage;
+    }
+
+    public String getReleaseDate(){
+        if(!TextUtils.isEmpty(releaseDate)) {
+            String[] segments = releaseDate.split("-");
+            return segments[0];
+        }
+        return releaseDate;
     }
 
     public static class Builder{

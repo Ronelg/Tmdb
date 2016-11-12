@@ -23,4 +23,8 @@
 
   <!-- grid -->
   <integer name="num_columns">2</integer>
+
+  <!-- movie details -->
+  <dimen name="title_container_height">120dp</dimen>
+
 </resources>

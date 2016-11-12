@@ -3,4 +3,7 @@
 
   <!-- grid -->
   <integer name="num_columns">3</integer>
+
+  <!-- movie details -->
+  <dimen name="title_container_height">200dp</dimen>
 </resources>
