@@ -1,4 +1,4 @@
-package com.tikaldemo.android;
+package com.tmdb.android;
 
 import org.junit.Test;
 

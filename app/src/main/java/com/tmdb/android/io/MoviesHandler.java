@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import com.tmdb.android.io.model.Movie;
 import com.tmdb.android.provider.TmdbContract;
+import com.tmdb.android.util.MovieUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class MoviesHandler extends BaseHandler<List<Movie>>{
             builder.withValue(TmdbContract.Movies.MOVIE_VOTE_AVERAGE, movie.voteAverage);
             builder.withValue(TmdbContract.Movies.MOVIE_OVERVIEW, movie.overview);
             builder.withValue(TmdbContract.Movies.MOVIE_RELEASE_DATE, movie.releaseDate);
-            builder.withValue(TmdbContract.Movies.MOVIE_POSTER_PATH, movie.posterPath);
+            builder.withValue(TmdbContract.Movies.MOVIE_POSTER_PATH, MovieUtils.patchPosterPath(movie.posterPath));
             list.add(builder.build());
         }
     }

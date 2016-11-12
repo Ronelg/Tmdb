@@ -17,7 +17,7 @@ import static com.tmdb.android.util.LogUtils.makeLogTag;
 public class TmdbDatabase extends SQLiteOpenHelper {
     private static final String TAG = makeLogTag(TmdbDatabase.class);
 
-    private static final String DATABASE_NAME = "tikal.db";
+    private static final String DATABASE_NAME = "tmdb.db";
 
     private static final int RELEASE_A = 1;
     private static final int CUR_DATABASE_VERSION = RELEASE_A;

@@ -17,10 +17,6 @@ public enum TmdbUriEnum {
     TRAILERS_ID(201, "trailers/*", TmdbContract.Movies.CONTENT_TYPE_ID, true, null);
 
 
-
-    //BLOCKS_BETWEEN(101, "blocks/between/*/*", ScheduleContract.Blocks.CONTENT_TYPE_ID, false, null),
-    //              ScheduleContract.SearchTopicsSessions.CONTENT_TYPE_ID, false, null /*virtual table*/);
-
     public int code;
 
     /**

@@ -1,4 +1,4 @@
-package com.tikaldemo.android;
+package com.tmdb.android;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.tikaldemo.android", appContext.getPackageName());
+        assertEquals("com.tmdb.android", appContext.getPackageName());
     }
 }

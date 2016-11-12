@@ -1,6 +1,6 @@
 package com.tmdb.android.data;
 
-import com.tikaldemo.android.BuildConfig;
+import com.tmdb.android.BuildConfig;
 import com.tmdb.android.data.api.ClientAuthInterceptor;
 import com.tmdb.android.data.api.TmdbService;
 import okhttp3.OkHttpClient;

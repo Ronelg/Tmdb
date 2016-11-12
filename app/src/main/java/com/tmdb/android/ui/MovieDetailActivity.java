@@ -6,7 +6,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
-import com.tikaldemo.android.R;
+import com.tmdb.android.R;
 
 /**
  * An activity representing a single Movie detail screen. This

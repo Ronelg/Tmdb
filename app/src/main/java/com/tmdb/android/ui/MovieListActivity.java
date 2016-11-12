@@ -13,15 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
-import com.tikaldemo.android.R;
+import com.tmdb.android.R;
 import com.tmdb.android.data.TmdbItem;
 import com.tmdb.android.data.source.LoaderProvider;
 import com.tmdb.android.data.source.TmdbRepositoryProvider;
 import com.tmdb.android.io.model.Movie;
-import com.tmdb.android.util.ImageUtils;
+import com.tmdb.android.util.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +46,8 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
 
     private MoviesPresenter mMoviesPresenter;
 
+    private ImageLoader mImageLoader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +57,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
+        mImageLoader = new ImageLoader(getApplicationContext(), R.drawable.ic_image_24dp);
 
         // Create the presenter
         LoaderProvider loaderProvider = new LoaderProvider(this);
@@ -88,8 +89,6 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        //recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
-
         int columns = getResources().getInteger(R.integer.num_columns);
         mAdapter = new MoviesAdapter(this, columns);
         GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
@@ -233,11 +232,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         }
 
         private void bindMovieHolder(final Movie movie, final MovieHolder holder, int position) {
-            Glide.with(host)
-                    .load(ImageUtils.getImagePath(movie.posterPath))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .override(400, 300)//override image size, This is not the best choice should request size from server
-                    .into(holder.thumbnail);
+            mImageLoader.loadImage(movie.posterPath, holder.thumbnail, true);
 
             holder.thumbnail.setOnClickListener(new View.OnClickListener() {
                 @Override

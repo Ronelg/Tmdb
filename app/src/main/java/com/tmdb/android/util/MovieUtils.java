@@ -1,6 +1,7 @@
 package com.tmdb.android.util;
 
 import android.database.Cursor;
+import android.net.Uri;
 import com.tmdb.android.io.model.Movie;
 import com.tmdb.android.provider.TmdbContract;
 import java.util.ArrayList;
@@ -11,6 +12,9 @@ import java.util.List;
  */
 
 public class MovieUtils {
+
+    private static final String BASE_IMAGE_URL_PREFIX = "https://image.tmdb.org/t/p/";
+    private static final String PATTERN = "__w-300-500__";
 
     public static List<Movie> readMoviesFromCursor(Cursor cursor) {
         List<Movie> movies = new ArrayList<>();
@@ -36,5 +40,9 @@ public class MovieUtils {
             }
         }
         return movies;
+    }
+
+    public static String patchPosterPath(String posterPath){
+        return BASE_IMAGE_URL_PREFIX + PATTERN + posterPath;
     }
 }

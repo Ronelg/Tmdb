@@ -15,8 +15,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
-import com.tikaldemo.android.R;
+import com.tmdb.android.R;
 import com.tmdb.android.io.model.Movie;
+import com.tmdb.android.util.ImageLoader;
 import com.tmdb.android.util.ImageUtils;
 
 /**
@@ -31,6 +32,8 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
      * represents.
      */
     public static final String ARG_MOVIE = "movie";
+
+    private ImageLoader mImageLoader;
 
     private Movie mMovie;
     private ImageView mMovieImage;
@@ -49,6 +52,8 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mImageLoader = new ImageLoader(getActivity().getApplicationContext(), R.drawable.ic_image_24dp);
 
         if (getArguments().containsKey(ARG_MOVIE)) {
             // Load the dummy content specified by the fragment
@@ -82,10 +87,7 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
 
     private void bindUiElements(){
         if(mMovie != null){
-            Glide.with(this)
-                    .load(ImageUtils.getImagePath(mMovie.posterPath))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(mMovieImage);
+            mImageLoader.loadImage(mMovie.posterPath, mMovieImage, true);
 
             mMovieYear.setText(mMovie.releaseDate);
             mMovieRating.setText(String.format("%s/10", mMovie.voteAverage));
