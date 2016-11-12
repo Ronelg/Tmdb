@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import com.tmdb.android.data.TmdbItem;
 import com.tmdb.android.data.source.LoaderProvider;
 import com.tmdb.android.data.source.TmdbRepositoryProvider;
 import com.tmdb.android.io.model.Movie;
+import com.tmdb.android.ui.widget.ScrollChildSwipeRefreshLayout;
 import com.tmdb.android.util.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +83,24 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
             mTwoPane = true;
         }
 
+        // Set up progress indicator
+        final ScrollChildSwipeRefreshLayout swipeRefreshLayout =
+                (ScrollChildSwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        swipeRefreshLayout.setColorSchemeColors(
+                ContextCompat.getColor(this, R.color.colorPrimary),
+                ContextCompat.getColor(this, R.color.colorAccent),
+                ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        // Set the scrolling view in the custom SwipeRefreshLayout.
+        swipeRefreshLayout.setScrollUpChild(recyclerView);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mMoviesPresenter.loadMovies();
+            }
+        });
+
     }
 
     @Override
@@ -99,8 +120,20 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
     }
 
     @Override
-    public void setLoadingIndicator(boolean active) {
+    public void setLoadingIndicator(final boolean active) {
+        if (isFinishing()) {
+            return;
+        }
+        final SwipeRefreshLayout srl =
+                (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
 
+        // Make sure setRefreshing() is called after the layout is done with everything else.
+        srl.post(new Runnable() {
+            @Override
+            public void run() {
+                srl.setRefreshing(active);
+            }
+        });
     }
 
     @Override

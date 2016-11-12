@@ -75,14 +75,14 @@ public class TmdbRepository implements TmdbDataSource {
     }
 
     @Override
-    public void getMovieTrailers(@NonNull String movieId,
+    public void getMovieTrailers(@NonNull final String movieId,
             @NonNull final GetMovieTrailersCallback callback) {
 
         // Load from server
         mTmdbRemoteDataSource.getMovieTrailers(movieId, new GetMovieTrailersCallback() {
-
             @Override
             public void onMovieTrailersLoaded(List<Trailer> trailers) {
+                refreshLocalDataSource(movieId, trailers);
                 callback.onMovieTrailersLoaded(trailers);
             }
 
@@ -128,9 +128,11 @@ public class TmdbRepository implements TmdbDataSource {
     }
 
     private void refreshLocalDataSource(List<Movie> movies) {
-        //for (Task task : tasks) {
-            mTmdbLocalDataSource.saveMovies(movies);
-        //}
+        mTmdbLocalDataSource.saveMovies(movies);
+    }
+
+    private void refreshLocalDataSource(String movieId, List<Trailer> trailers) {
+        mTmdbLocalDataSource.saveMovieTrailers(movieId, trailers);
     }
 
     public interface LoadDataCallback {
