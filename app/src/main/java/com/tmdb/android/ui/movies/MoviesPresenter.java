@@ -60,10 +60,7 @@ public class MoviesPresenter implements MoviesContract.Presenter,
             dispatchLoadingStartedCallbacks();
 
             mMoviesView.setLoadingIndicator(forceUpdate);
-            if (forceUpdate) {
-                mTmdbRepository.deleteAllMovies();
-            }
-            mTmdbRepository.getMovies(this);
+            mTmdbRepository.getMovies(forceUpdate, this);
         }
     }
 

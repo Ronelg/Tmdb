@@ -42,7 +42,7 @@ public class TmdbRemoteDataSource implements TmdbDataSource {
     }
 
     @Override
-    public void getMovies(@NonNull final GetMoviesCallback callback) {
+    public void getMovies(boolean forceUpdate, @NonNull final GetMoviesCallback callback) {
         mTmdbApi.getApi().getPopularMovies(mPage).enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {

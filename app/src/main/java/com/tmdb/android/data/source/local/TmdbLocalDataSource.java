@@ -46,7 +46,7 @@ public class TmdbLocalDataSource implements TmdbDataSource {
 
 
     @Override
-    public void getMovies(@NonNull GetMoviesCallback callback) {
+    public void getMovies(boolean forceUpdate, @NonNull GetMoviesCallback callback) {
         // no-op since the data is loader via Cursor Loader
 
         Cursor query =

@@ -29,7 +29,7 @@ public interface TmdbDataSource {
         void onDataNotAvailable();
     }
 
-    void getMovies(@NonNull GetMoviesCallback callback);
+    void getMovies(boolean forceUpdate, @NonNull GetMoviesCallback callback);
 
     void getMovieTrailers(@NonNull String movieId, @NonNull GetMovieTrailersCallback callback);
 

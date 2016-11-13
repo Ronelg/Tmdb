@@ -50,13 +50,16 @@ public class TmdbRepository implements TmdbDataSource {
     }
 
     @Override
-    public void getMovies(@NonNull final GetMoviesCallback callback) {
+    public void getMovies(final boolean forceUpdate, @NonNull final GetMoviesCallback callback) {
         checkNotNull(callback);
 
         // Load from server
-        mTmdbRemoteDataSource.getMovies(new GetMoviesCallback() {
+        mTmdbRemoteDataSource.getMovies(forceUpdate, new GetMoviesCallback() {
             @Override
             public void onMoviesLoaded(List<Movie> movies) {
+                if(forceUpdate){
+                    deleteAllMovies();
+                }
                 refreshLocalDataSource(movies);
                 callback.onMoviesLoaded(movies);
             }
@@ -68,7 +71,7 @@ public class TmdbRepository implements TmdbDataSource {
 
             @Override
             public void onDataNotAvailable() {
-                mTmdbLocalDataSource.getMovies(callback);
+                mTmdbLocalDataSource.getMovies(forceUpdate, callback);
                 callback.onDataNotAvailable();
             }
         });
