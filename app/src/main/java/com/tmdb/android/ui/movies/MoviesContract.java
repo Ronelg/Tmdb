@@ -24,7 +24,7 @@ public class MoviesContract {
 
     public interface Presenter extends BasePresenter {
 
-        void loadMovies();
+        void loadMovies(boolean forceUpdate);
 
     }
 }

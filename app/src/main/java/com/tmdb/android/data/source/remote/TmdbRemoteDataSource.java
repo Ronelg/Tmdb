@@ -7,6 +7,7 @@ import com.tmdb.android.data.api.model.TrailersResponse;
 import com.tmdb.android.data.source.TmdbDataSource;
 import com.tmdb.android.io.model.Movie;
 import com.tmdb.android.io.model.Trailer;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +23,11 @@ public class TmdbRemoteDataSource implements TmdbDataSource {
     private static TmdbRemoteDataSource sInstance;
     private static TmdbApi mTmdbApi;
 
-    private final static Map<String, Movie> mMovies = new LinkedHashMap<>(2);
+    private final static Map<String, Movie> mMovies = new LinkedHashMap<>();
     private final static Map<String, List<Trailer>> mMovieTrailers = new LinkedHashMap<>(2);
 
+    private int mPage = 1;
+    private int mTotalPages;
 
     // Prevent direct instantiation.
     private TmdbRemoteDataSource() {
@@ -40,14 +43,17 @@ public class TmdbRemoteDataSource implements TmdbDataSource {
 
     @Override
     public void getMovies(@NonNull final GetMoviesCallback callback) {
-        mTmdbApi.getApi().getPopularMovies(1).enqueue(new Callback<MoviesResponse>() {
+        mTmdbApi.getApi().getPopularMovies(mPage).enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                 if(response.isSuccessful()) {
                     List<Movie> movies = response.body().movies;
                     saveMovies(movies);
 
-                    callback.onMoviesLoaded(movies);
+                    ++mPage;
+                    mTotalPages = response.body().totalPages;
+
+                    callback.onMoviesLoaded(new ArrayList<Movie>(mMovies.values()));
                 }else{
                     callback.onError();
                 }
@@ -92,7 +98,7 @@ public class TmdbRemoteDataSource implements TmdbDataSource {
     @Override
     public void saveMovies(@NonNull List<Movie> movies) {
         for (Movie movie : movies) {
-            mMovies.put(String.valueOf(movie.id), movie);
+            mMovies.put(String.valueOf(movie.movieId), movie);
         }
     }
 
@@ -105,6 +111,8 @@ public class TmdbRemoteDataSource implements TmdbDataSource {
 
     @Override
     public void deleteAllMovies() {
+        mPage = 1;
+        mTotalPages = 0;
         mMovies.clear();
     }
 

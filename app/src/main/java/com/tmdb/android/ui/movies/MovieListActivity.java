@@ -24,6 +24,8 @@ import com.tmdb.android.io.model.Movie;
 import com.tmdb.android.ui.moviedetails.MovieDetailActivity;
 import com.tmdb.android.ui.moviedetails.MovieDetailFragment;
 import com.tmdb.android.ui.moviedetails.MovieDetailsPresenter;
+import com.tmdb.android.ui.recyclerview.DataLoadingSubject;
+import com.tmdb.android.ui.recyclerview.InfiniteScrollListener;
 import com.tmdb.android.ui.widget.ScrollChildSwipeRefreshLayout;
 import com.tmdb.android.util.ImageLoader;
 import java.util.ArrayList;
@@ -42,6 +44,7 @@ import static com.tmdb.android.util.LogUtils.makeLogTag;
 public class MovieListActivity extends AppCompatActivity implements MoviesContract.View{
 
     private static final String TAG = makeLogTag(MovieListActivity.class);
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -57,6 +60,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
     private MovieDetailFragment mMovieDetailFragment;
 
     private LoaderProvider mLoaderProvider;
+    
     private ImageLoader mImageLoader;
 
     @Override
@@ -105,16 +109,23 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mMoviesPresenter.loadMovies();
+                mMoviesPresenter.loadMovies(true);
             }
         });
 
+        mMoviesPresenter.start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mMoviesPresenter.start();
+        mMoviesPresenter.registerCallback(mAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMoviesPresenter.unregisterCallback(mAdapter);
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -122,6 +133,14 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         mAdapter = new MoviesAdapter(this, columns);
         GridLayoutManager layoutManager = new GridLayoutManager(this, columns);
 
+        InfiniteScrollListener listener = new InfiniteScrollListener(layoutManager, mMoviesPresenter) {
+            @Override
+            public void onLoadMore() {
+                mMoviesPresenter.loadMovies(false);
+            }
+        };
+
+        recyclerView.addOnScrollListener(listener);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(mAdapter);
@@ -164,7 +183,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
 
     }
 
-    public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class MoviesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DataLoadingSubject.DataLoadingCallbacks{
 
         private static final int TYPE_MOVIE = 0;
         private static final int TYPE_LOADING_MORE = -1;
@@ -309,10 +328,28 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         private void bindLoadingViewHolder(LoadingMoreHolder holder, int position) {
             // only show the infinite load progress spinner if there are already items in the
             // grid i.e. it's not the first item & data is being loaded
-            //holder.progress.setVisibility((position > 0 && dataLoading.isDataLoading())
-            //        ? View.VISIBLE : View.INVISIBLE);
+            holder.progress.setVisibility((position > 0 && showLoadingMore)
+                    ? View.VISIBLE : View.INVISIBLE);
         }
 
+        private int getLoadingMoreItemPosition() {
+            return showLoadingMore ? getItemCount() - 1 : RecyclerView.NO_POSITION;
+        }
+
+        @Override
+        public void dataStartedLoading() {
+            if (showLoadingMore) return;
+            showLoadingMore = true;
+            notifyItemInserted(getLoadingMoreItemPosition());
+        }
+
+        @Override
+        public void dataFinishedLoading() {
+            if (!showLoadingMore) return;
+            final int loadingPos = getLoadingMoreItemPosition();
+            showLoadingMore = false;
+            notifyItemRemoved(loadingPos);
+        }
 
         /* package */  class MovieHolder extends RecyclerView.ViewHolder {
 

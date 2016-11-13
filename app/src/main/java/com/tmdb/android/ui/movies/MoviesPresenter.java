@@ -9,7 +9,9 @@ import com.tmdb.android.data.source.LoaderProvider;
 import com.tmdb.android.data.source.TmdbDataSource;
 import com.tmdb.android.data.source.TmdbRepository;
 import com.tmdb.android.io.model.Movie;
+import com.tmdb.android.ui.recyclerview.DataLoadingSubject;
 import com.tmdb.android.util.MovieUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,7 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class MoviesPresenter implements MoviesContract.Presenter,
         TmdbDataSource.GetMoviesCallback,
         TmdbRepository.LoadDataCallback,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        DataLoadingSubject {
 
     public final static int MOVIES_LOADER = 1;
 
@@ -36,6 +39,11 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @NonNull
     private final LoaderProvider mLoaderProvider;
 
+    private boolean mIsDataLoading;
+
+    private List<DataLoadingSubject.DataLoadingCallbacks> mDataLoadingCallbacks;
+
+
     public MoviesPresenter(MoviesContract.View moviesView, @NonNull TmdbRepository tmdbRepository,
             @NonNull LoaderManager loaderManager, @NonNull LoaderProvider loaderProvider) {
         this.mMoviesView = checkNotNull(moviesView, "moviesView cannot be null!");
@@ -46,14 +54,22 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     }
 
     @Override
-    public void loadMovies() {
-        mMoviesView.setLoadingIndicator(true);
-        mTmdbRepository.getMovies(this);
+    public void loadMovies(boolean forceUpdate) {
+        if(!isDataLoading()) {
+            mIsDataLoading = true;
+            dispatchLoadingStartedCallbacks();
+
+            mMoviesView.setLoadingIndicator(forceUpdate);
+            if (forceUpdate) {
+                mTmdbRepository.deleteAllMovies();
+            }
+            mTmdbRepository.getMovies(this);
+        }
     }
 
     @Override
     public void start() {
-        loadMovies();
+        loadMovies(true);
     }
 
     @Override
@@ -63,6 +79,8 @@ public class MoviesPresenter implements MoviesContract.Presenter,
         } else {
             mLoaderManager.restartLoader(MOVIES_LOADER, null, this);
         }
+        dispatchLoadingFinishedCallbacks();
+        mIsDataLoading = false;
     }
 
     @Override
@@ -114,5 +132,39 @@ public class MoviesPresenter implements MoviesContract.Presenter,
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         onDataReset();
+    }
+
+    @Override
+    public boolean isDataLoading() {
+        return mIsDataLoading;
+    }
+
+    @Override
+    public void registerCallback(DataLoadingCallbacks callback) {
+        if (mDataLoadingCallbacks == null) {
+            mDataLoadingCallbacks = new ArrayList<>(1);
+        }
+        mDataLoadingCallbacks.add(callback);
+    }
+
+    @Override
+    public void unregisterCallback(DataLoadingCallbacks callback) {
+        if (mDataLoadingCallbacks != null && mDataLoadingCallbacks.contains(callback)) {
+            mDataLoadingCallbacks.remove(callback);
+        }
+    }
+
+    private void dispatchLoadingStartedCallbacks() {
+        if (mDataLoadingCallbacks == null || mDataLoadingCallbacks.isEmpty()) return;
+        for (DataLoadingCallbacks loadingCallback : mDataLoadingCallbacks) {
+            loadingCallback.dataStartedLoading();
+        }
+    }
+
+    private void dispatchLoadingFinishedCallbacks() {
+        if (mDataLoadingCallbacks == null || mDataLoadingCallbacks.isEmpty()) return;
+        for (DataLoadingCallbacks loadingCallback : mDataLoadingCallbacks) {
+            loadingCallback.dataFinishedLoading();
+        }
     }
 }
