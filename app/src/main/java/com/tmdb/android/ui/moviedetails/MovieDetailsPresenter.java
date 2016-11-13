@@ -23,7 +23,7 @@ public class MovieDetailsPresenter implements MovieDetailsContract.Presenter,
         TmdbRepository.LoadDataCallback,
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    public final static int MOVIE_TRAILERS_LOADER = 2;
+    public final static int MOVIE_TRAILERS_LOADER = 0x2;
 
     private final MovieDetailsContract.View mMovieTrailersView;
 
