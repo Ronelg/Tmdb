@@ -1,12 +1,10 @@
-package com.tmdb.android.ui;
+package com.tmdb.android.ui.moviedetails;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.Loader;
-import android.database.Cursor;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +14,11 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.tmdb.android.R;
 import com.tmdb.android.io.model.Movie;
+import com.tmdb.android.io.model.Trailer;
+import com.tmdb.android.ui.movies.MovieListActivity;
 import com.tmdb.android.util.ImageLoader;
+import java.util.List;
+
 
 /**
  * A fragment representing a single Movie detail screen.
@@ -24,7 +26,7 @@ import com.tmdb.android.util.ImageLoader;
  * in two-pane mode (on tablets) or a {@link MovieDetailActivity}
  * on handsets.
  */
-public class MovieDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class MovieDetailFragment extends Fragment implements MovieDetailsContract.View{
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -40,6 +42,8 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     private TextView mMovieDuration;
     private TextView mMovieRating;
     private TextView mMovieOverview;
+
+    private TrailersAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -71,8 +75,22 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
         mMovieRating = (TextView) rootView.findViewById(R.id.movie_rating);
         mMovieOverview = (TextView) rootView.findViewById(R.id.movie_overview);
 
+        View recyclerView = rootView.findViewById(R.id.trailers_list);
+        setupRecyclerView((RecyclerView) recyclerView);
+
+
         bindUiElements();
         return rootView;
+    }
+
+    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        mAdapter = new TrailersAdapter(getActivity());
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 1);
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(mAdapter);
+
     }
 
     private void bindUiElements(){
@@ -87,17 +105,27 @@ public class MovieDetailFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void setLoadingIndicator(boolean active) {
 
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void showTrailers(List<Trailer> trailers) {
+        mAdapter.setItems(trailers);
+    }
+
+    @Override
+    public void showLoadingTrailersError() {
+
+    }
+
+    @Override
+    public void showNoTrailers() {
+
+    }
+
+    @Override
+    public void setPresenter(MovieDetailsContract.Presenter presenter) {
 
     }
 }

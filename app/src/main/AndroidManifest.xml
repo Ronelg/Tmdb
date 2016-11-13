@@ -14,7 +14,7 @@
       android:theme="@style/AppTheme">
 
     <activity
-        android:name="com.tmdb.android.ui.MovieListActivity"
+        android:name="com.tmdb.android.ui.movies.MovieListActivity"
         android:label="@string/activity_movie_list"
         android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
@@ -25,13 +25,13 @@
     </activity>
 
     <activity
-        android:name="com.tmdb.android.ui.MovieDetailActivity"
+        android:name="com.tmdb.android.ui.moviedetails.MovieDetailActivity"
         android:label="@string/activity_movie_details"
-        android:parentActivityName="com.tmdb.android.ui.MovieListActivity"
+        android:parentActivityName="com.tmdb.android.ui.movies.MovieListActivity"
         android:theme="@style/AppTheme.NoActionBar">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
-          android:value="com.tmdb.android.ui.MovieListActivity"/>
+          android:value="com.tmdb.android.ui.movies.MovieListActivity"/>
     </activity>
 
     <provider

@@ -1,4 +1,4 @@
-package com.tmdb.android.ui;
+package com.tmdb.android.ui.movies;
 
 import android.app.LoaderManager;
 import android.content.Loader;

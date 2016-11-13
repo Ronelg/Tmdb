@@ -27,7 +27,7 @@ public class TrailersHandler extends BaseHandler<List<Trailer>> {
 
     @Override
     public void makeContentProviderOperations(ArrayList<ContentProviderOperation> list) {
-        Uri uri = TmdbContract.Movies.CONTENT_URI;
+        Uri uri = TmdbContract.Trailers.CONTENT_URI;
 
         //list.add(ContentProviderOperation.newDelete(uri).build());
 

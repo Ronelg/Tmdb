@@ -1,4 +1,4 @@
-package com.tmdb.android.ui;
+package com.tmdb.android.ui.movies;
 
 import com.tmdb.android.BasePresenter;
 import com.tmdb.android.BaseView;

@@ -1,4 +1,4 @@
-package com.tmdb.android.ui;
+package com.tmdb.android.ui.movies;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +21,9 @@ import com.tmdb.android.data.TmdbItem;
 import com.tmdb.android.data.source.LoaderProvider;
 import com.tmdb.android.data.source.TmdbRepositoryProvider;
 import com.tmdb.android.io.model.Movie;
+import com.tmdb.android.ui.moviedetails.MovieDetailActivity;
+import com.tmdb.android.ui.moviedetails.MovieDetailFragment;
+import com.tmdb.android.ui.moviedetails.MovieDetailsPresenter;
 import com.tmdb.android.ui.widget.ScrollChildSwipeRefreshLayout;
 import com.tmdb.android.util.ImageLoader;
 import java.util.ArrayList;
@@ -49,6 +52,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
 
     private MoviesPresenter mMoviesPresenter;
 
+    private MovieDetailsPresenter mMovieDetailsPresenter;
+
+    private MovieDetailFragment mMovieDetailFragment;
+
+    private LoaderProvider mLoaderProvider;
     private ImageLoader mImageLoader;
 
     @Override
@@ -63,12 +71,12 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
         mImageLoader = new ImageLoader(getApplicationContext(), R.drawable.ic_image_24dp);
 
         // Create the presenter
-        LoaderProvider loaderProvider = new LoaderProvider(this);
+        mLoaderProvider = new LoaderProvider(this);
 
         mMoviesPresenter = new MoviesPresenter(this,
                 TmdbRepositoryProvider.provideMoviesRepository(getApplicationContext()),
                 getLoaderManager(),
-                loaderProvider);
+                mLoaderProvider);
 
         View recyclerView = findViewById(R.id.movie_list);
         assert recyclerView != null;
@@ -278,6 +286,15 @@ public class MovieListActivity extends AppCompatActivity implements MoviesContra
                         getFragmentManager().beginTransaction()
                                 .replace(R.id.movie_detail_container, fragment)
                                 .commit();
+
+
+                        mMovieDetailsPresenter = new MovieDetailsPresenter(String.valueOf(movie.movieId),
+                                fragment,
+                                TmdbRepositoryProvider.provideMoviesRepository(getApplicationContext()),
+                                getLoaderManager(),
+                                mLoaderProvider);
+
+                        mMovieDetailsPresenter.start();
                     }else {
                         Intent intent = new Intent(host, MovieDetailActivity.class);
                         intent.putExtra(MovieDetailFragment.ARG_MOVIE,new Gson().toJson(movie));

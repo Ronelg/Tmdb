@@ -7,7 +7,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="com.tmdb.android.ui.MovieListActivity">
+    tools:context="com.tmdb.android.ui.movies.MovieListActivity">
 
   <!--
     This layout is a two-pane layout for the Movies
@@ -27,7 +27,7 @@
         android:name="com.tikaldemo.android.MovieListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.tmdb.android.ui.MovieListActivity"
+        tools:context="com.tmdb.android.ui.movies.MovieListActivity"
         tools:listitem="@layout/movie_list_content"/>
   </com.tmdb.android.ui.widget.ScrollChildSwipeRefreshLayout>
 
